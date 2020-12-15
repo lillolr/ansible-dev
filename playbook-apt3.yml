@@ -1,6 +1,7 @@
 ---
 - name: Our first play
   hosts: planetexpress
+  gather_facts: yes # runs by default
 
   tasks:
 
@@ -9,4 +10,5 @@
         name: sl
         state: present
       become: yes # run as sudo
+      when: ansible_distribution == "Ubuntu"
 

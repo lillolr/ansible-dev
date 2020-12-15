@@ -1,6 +1,6 @@
 ---
 - name: Our first play
-  hosts: planetexpress
+  hosts: planetexpress:!farnsworth
 
   tasks:
 
