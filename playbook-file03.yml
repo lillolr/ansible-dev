@@ -1,0 +1,23 @@
+---
+- name: A playbook showing the file module
+  hosts: planetexpress
+
+  tasks:
+   - name: Create directory where Space Station documents will reside
+     become_user: root
+     become: true
+     file:
+        # the var "fileuser" is a host variable
+        path: "/home/{{ fileuser }}/station_docs/"
+        state: directory
+        owner: "{{ fileuser }}"
+        group: "{{ fileuser }}"
+        mode: "0755"
+
+   - name: Copy content into a file with the year-mo-day
+     copy:
+        # the var "fileuser" is a host variablen
+        # ansible_date_time.date is defined by gather_facts
+        dest: "/home/{{ fileuser }}/station_docs/navdata-{{ ansible_date_time.date }}.txt"
+        content: "Earth\nMars\nSaturn\nEuropa\n"
+
