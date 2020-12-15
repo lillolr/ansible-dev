@@ -1,0 +1,29 @@
+---
+all:
+    hosts:
+            # "ungrouped" hosts would go here
+    children:
+            labhosts:
+                    hosts:
+                            stuart:
+                                    ansible_host: 10.10.1.5
+                                    ansible_user: stuart
+                            pete:
+                                    ansible_host: 10.10.1.6
+                                    ansible_ssh_user: pete
+            drums:
+                    hosts:
+                            ringo:
+                                    ansible_host: 10.10.1.7
+                                    ansible_user: ringo
+                            pete:
+                                    ansible_host: 10.10.1.6
+                                    ansible_user: pete
+                                    # host vars could go here
+                                    # dns_ip: 8.8.8.8
+                                    # firewall_ip: 172.0.0.1
+                    # group vars could go below here
+                    # all hosts within drums would inherit
+                    vars:
+                            gateway_ip: 172.0.0.1
+

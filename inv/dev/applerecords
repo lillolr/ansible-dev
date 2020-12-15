@@ -1,0 +1,34 @@
+[labhosts]
+stuart    ansible_host=10.10.1.5 ansible_user=stuart ansible_ssh_pass=alta3
+pete      ansible_host=10.10.1.6 ansible_user=pete ansible_ssh_pass=alta3
+
+[lostbeatle]
+stuart    ansible_host=10.10.1.5 ansible_user=stuart
+pete      ansible_host=10.10.1.6 ansible_user=pete
+
+[guitar]
+john      ansible_host=10.10.1.2 ansible_user=john
+george    ansible_host=10.10.1.4 ansible_user=george
+paul      ansible_host=10.10.1.3 ansible_user=paul
+
+[bass]
+pete      ansible_host=10.10.1.6 ansible_user=pete
+
+[drums]
+ringo     ansible_host=10.10.1.7 ansible_user=ringo ansible_ssh_pass=alta3
+pete      ansible_host=10.10.1.6 ansible_user=pete
+
+[beatles]
+john      ansible_host=10.10.1.2 ansible_user=john
+george    ansible_host=10.10.1.4 ansible_user=george
+ringo     ansible_host=10.10.1.7 ansible_user=ringo
+paul      ansible_host=10.10.1.3 ansible_user=paul
+
+[strings:children]
+guitar
+bass
+
+[allbeatles:children]
+lostbeatle
+beatles
+

@@ -1,0 +1,12 @@
+---
+- name: Playbook - Install figlet
+  hosts: pete
+  gather_facts: yes   # default is yes
+
+  tasks:
+  - name: using apt to install figlet
+    apt:
+        name: figlet
+        state: present
+    become: yes
+
