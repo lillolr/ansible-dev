@@ -1,0 +1,17 @@
+---
+- name: Expanding Dell EMC PowerMax volumes by WWN by RZFeeser
+  hosts: localhost
+  gather_facts: yes   # required for ansible_date_time.epoch
+  
+  vars_files:
+    - wwns_to_expand-example.yml    # define var 'listofwwn2expand'
+  
+  vars:
+    ush: 10.126.70.19   ## IP of unisphere host
+
+  
+  collections:
+    - dellemc.powermax
+    
+  roles:
+    - rzfeeser.dell_powermax_expand_vol_by_wwn

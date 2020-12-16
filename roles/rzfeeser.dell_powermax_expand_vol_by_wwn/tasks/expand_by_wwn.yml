@@ -1,0 +1,30 @@
+---
+- name: Expand Vols by WWN
+  block:
+    - name: Expand Volume by WWN
+      dellemc_powermax_volume:
+        unispherehost: "{{ ush }}"
+        universion: "{{ usv }}"
+        verifycert: "{{ vc }}"
+        user: "{{ un }}"
+        password: "{{ pw }}"
+        serial_no: "{{ (item.wwn|string)[8:20] }}"  ## a wwn contains the array in this slice
+        size: "{{ item.nsov }}"
+        cap_unit: GB
+        vol_wwn: "{{ item.wwn|string }}"
+        state: present
+        
+  rescue:
+    - name: Print out failed WWN
+      debug:
+        msg: "Error expanding WWN {{ item.wwn }} to {{ item.nsov }}" 
+    
+    - name: ensure error file exists
+      file:
+        state: touch
+        path: "failed_wwns-{{ ansible_date_time.epoch }}.yml"
+    
+    - name: Writeout failed WWN
+      lineinfile:
+        dest: "failed_wwns-{{ ansible_date_time.epoch }}.yml"
+        line: "{{ item.wwn }} failed to expand to {{ item.nsov }}"

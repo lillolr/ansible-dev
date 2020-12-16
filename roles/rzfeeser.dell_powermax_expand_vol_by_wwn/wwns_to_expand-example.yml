@@ -1,0 +1,6 @@
+--- #wwns_to_expand-example.yml
+listofwwn2expand:
+  - wwn: 60000970000197900507533030304538 ## a single wwn to expand (int or string is fine)
+    nsov: 33 ## new size in GB to expand the volume to (int) (total size)
+  - wwn: 60000970000197900507533030383621 ## a single wwn to expand (int or string is fine)
+    nsov: 34 ## new size in GB to expand the volume to (int) (total size)

@@ -1,0 +1,15 @@
+---
+# vars file for ansible-minecraft
+# 
+# The latest server software is available here:
+#
+# https://minecraft.net/en-us/download/server/
+#
+# When new server software becomes available
+# update mc_version and mc_version_str
+
+# avail at https://minecraft.net/en-us/download/server/
+mc_version: 'https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar' 
+
+# This should reflect the current version of the Minecraft server
+mc_version_str: "1.14.1"

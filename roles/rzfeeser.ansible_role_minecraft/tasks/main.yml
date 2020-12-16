@@ -1,0 +1,9 @@
+---
+# determine platform to deploy on
+# Supported platforms:
+#   - debian
+#   - ubuntu
+
+- name: Deploy on Debian or Ubuntu
+  include_tasks: deployonubuntu.yml
+  when: ansible_os_family == "Debian"

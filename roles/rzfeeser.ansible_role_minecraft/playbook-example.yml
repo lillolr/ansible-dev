@@ -1,0 +1,6 @@
+---
+- name: Deploy the minecraft server
+  hosts: minecraft
+
+  roles:
+          - ansible-role-minecraft

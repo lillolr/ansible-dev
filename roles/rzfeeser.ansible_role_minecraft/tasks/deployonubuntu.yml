@@ -1,0 +1,158 @@
+---
+# tasks file for ansible-minecraft
+#
+- name: Install apps for minecraft server
+  become: yes
+  block:
+
+      - name: Update apt with latest
+        apt:
+          upgrade: dist
+          update_cache: yes
+
+      - name: Install additional apps via apt
+        apt:
+          name:
+                  - default-jre
+                  - screen
+                  - git
+                  - vim
+                  - fail2ban
+          state: present
+
+- name: Setup fail2ban (ssh protection)
+  become: yes
+  block:
+      - name: Copy fail2ban
+        copy:
+          src: /etc/fail2ban/jail.conf
+          dest: /etc/fail2ban/jail.local
+          remote_src: true
+
+      - name: Update fail2ban policy
+        lineinfile:
+          dest: /etc/fail2ban/jail.local
+          regexp: "^bantime  = 600$"
+          line: "bantime  = 20000"
+
+      - name: Restart fail2ban
+        service:
+          name: fail2ban
+          state: restarted
+
+## Ensure the local directory is available for Minecraft Server
+- name: Make minecraft directory
+  file:
+    path: ~/minecraft/
+    state: directory
+
+## copy run.sh into the new directory
+- name: move run.sh
+  copy:
+    src: run.sh
+    dest: ~/minecraft/
+    mode: u+x
+
+## Ensure the the latest version of Minecraft Server is present
+- name: Download minecraft ({{ mc_version_str }})
+  get_url:
+    url: "{{ mc_version }}"
+    dest: ~/minecraft/minecraft_server.jar
+
+## this tasks will indicate a change if the server software is NOT running
+- name: Test to see if java is running
+  command: pgrep java
+  register: iamrun
+  ignore_errors: yes
+  changed_when: iamrun.rc != 0
+
+- name: Only if minecraft server is already running
+  when: iamrun.rc == 0
+  block:
+
+      ## Tell players that the world is about to go through a backup & restart
+      - name: Signal the Minecraft Sever is about to get bounced
+        command: "screen -S minecraft -X stuff 'say The world shall be made safe for another day.
+                  We must momentarily hault the world.
+                  Sever restart in 1 minute. \n /save-off \n /save-all \n /save-on \n'"
+
+      ## Pause for 1 minute so players can disconnect from the game
+      - name: Pause for 1 minute
+        pause: minutes=1
+
+      ## STOP the Minecraft Server -- this also forces Screen to quit
+      - name: Turn off the server so the tar file can be built without errors
+        command: "screen -S minecraft -X stuff '/stop \n'"
+
+## Ensure that a backup directory exists on the Minecraft Server
+- name: Make minecraft_backup directory
+  file:
+    path: /tmp/minecraft_backup
+    state: directory # create a directory
+
+## Minecraft will not run in screen on the first launch, but be run natively
+- name: Check that minecraft has been run atleast once
+  stat:
+      path: ~/minecraft/server.properties
+  register: stat_result
+
+- name: Backup mc server if this is not the first run
+  when: stat_result.stat.exists
+  block:
+
+      - name: Compress minecraft files
+        archive:
+            path: ~/minecraft/  # contains minecraft files
+            dest: /tmp/minecraft_backup/minecraft_backup_{{ ansible_date_time.date }}.tar.gz # create a tar (one file) gz (compressed) with the date
+            remove: no # IMPORTANT! Always set to NO!!! Otherwise, the original data will be destroyed!!
+
+- name: Start minecraft (not in screen) the first time
+  when: not stat_result.stat.exists
+  block:
+
+      - name: move eula.txt into minecraft dir
+        copy:
+                src: eula.txt
+                dest: ~/minecraft/
+
+      ## Start thet server for the first time
+      - name: Start minecraft for the first time
+        command: "chdir=~/minecraft/ screen -S minecraft -d -m ~/minecraft/run.sh"
+
+      ## Pause for 2 minutes so the game can launch for the first time
+      - name: Pause for 30 seconds
+        pause: seconds=30
+
+      - name: replace busted eula.txt
+        replace:
+            path: ~/minecraft/eula.txt
+            regexp: '^eula=false'
+            replace: 'eula=true'
+
+      ## Start thet server for the first time
+      - name: Start minecraft for the first time
+        command: "chdir=~/minecraft/ screen -S minecraft -d -m ~/minecraft/run.sh"
+
+      - name: Pause for 80 seconds for mc server to fully boot
+        pause: seconds=80
+
+      - name: stop the server
+        command: "chdir=~/minecraft/ screen -S minecraft -d -m /stop \n"
+
+      - name: Pause for 20 seconds for mc server to fully stop
+        pause: seconds=20
+
+## Ensure the world is running
+- name: "Start the minecraft {{ mc_version }} server if needed"
+  command: "chdir=~/minecraft/ screen -S minecraft -d -m ~/minecraft/run.sh"
+  register: result
+  changed_when: result.rc == 0
+
+## allow the server 2 minutes to boot
+- name: pause for 80 seconds for mc server to fully boot
+  pause: seconds=80
+
+## Let the world know that the world has been saved!
+- name: Signal the Minecraft Sever has been backed up
+  command: "screen -S minecraft -X stuff '/say Backups have been completed. Entaro Adun. \n'"
+  changed_when: result.rc == 0

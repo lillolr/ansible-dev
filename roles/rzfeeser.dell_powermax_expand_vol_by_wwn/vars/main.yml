@@ -1,0 +1,13 @@
+---
+# ush: ## define in playbook - IP of unisphere host - can be over ridden by play_vars
+usv: "90" ## Per docs, this appears to be always set to 90 (for now)
+vc: False ## verify cert set to false for testing purposes
+un: smc  ## This is the USER NAME for the DELL PMAX
+pw: smc  ## This is the PASSWORD for the DELL PMAX
+
+# this is the format to resize one or more volumes by WWN
+#listofwwn2expand:
+#  - wwn: "60000970000197900507533030304538" ## a single wwn to expand (quote to make STRING)
+#    nsov: 33 ## new size in GB to expand the volume to (int) (total size)
+#  - wwn: "60000970000197900507533030383621" ## a single wwn to expand (quote to make STRING)
+#    nsov: 34 ## new size in GB to expand the volume to (int) (total size)

@@ -1,0 +1,5 @@
+---
+- name: Loop across tasks
+  include_tasks: expand_by_wwn.yml
+  loop: "{{ listofwwn2expand }}"
+  ignore_errors: yes

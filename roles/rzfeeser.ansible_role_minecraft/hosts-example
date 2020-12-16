@@ -1,0 +1,2 @@
+[minecraft]
+minecraftsvr ansible_host=192.168.70.55 ansible_user=minecraft ansible_ssh_pass=qwerty ansible_become_pass=sudopass
