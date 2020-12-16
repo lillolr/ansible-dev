@@ -1,0 +1,30 @@
+{
+ "collection_info": {
+  "namespace": "adalovelace",
+  "name": "myfirstcollection",
+  "version": "1.0.0",
+  "authors": [
+   "your name <example@domain.com>"
+  ],
+  "readme": "README.md",
+  "tags": [],
+  "description": "your collection description",
+  "license": [
+   "GPL-2.0-or-later"
+  ],
+  "license_file": null,
+  "dependencies": {},
+  "repository": "http://example.com/repository",
+  "documentation": "http://docs.example.com",
+  "homepage": "http://example.com",
+  "issues": "http://example.com/issue/tracker"
+ },
+ "file_manifest_file": {
+  "name": "FILES.json",
+  "ftype": "file",
+  "chksum_type": "sha256",
+  "chksum_sha256": "335e82237e977e71dcff3212cef80b96c51d404210781b3c2427d723cbe2abdf",
+  "format": 1
+ },
+ "format": 1
+}
