@@ -1,0 +1,59 @@
+---
+- name: Create Unix home directory from storagedetails-isi.yml data in PowerScale/Isilon
+  hosts: localhost
+  connection: local
+  
+  collections:
+          - dellemc.isilon 
+
+  vars_files:
+          - vars/credsvault-isi.yml
+          - vars/storagedetails-isi.yml
+
+  tasks:
+    - name: Create Filesystem with Quota for students
+      dellemc_isilon_filesystem:
+              onefs_host: "{{ onefs_host }}"
+              port_no: "{{ isilon_port }}"
+              verify_ssl: "{{ verify_ssl }}"
+              api_user: "{{ api_user }}"
+              api_password: "{{ api_password }}"
+              path: "{{base_path}}/students/{{item}}"
+              owner:
+                      name: "root"
+                      provider_type: 'file'
+              access_control: "{{ access_control }}"
+              # quota:  # quota is a featured supported by some ilison licenses
+              #         include_snap_data: False
+              #         include_data_protection_overhead: False
+              #         #advisory_limit_size: 2
+              #         soft_limit_size: 5
+              #         hard_limit_size: 10
+              #         cap_unit: 'GB'
+              #         quota_state: 'present'
+              recursive: True
+              state: "{{ state }}"
+      loop: "{{ students }}"
+    
+    
+    - name: Create Filesystem with Quota for Teachers
+      dellemc_isilon_filesystem:
+              onefs_host: "{{ onefs_host }}"
+              port_no: "{{ isilon_port }}"
+              verify_ssl: "{{ verify_ssl }}"
+              api_user: "{{ api_user }}"
+              api_password: "{{ api_password }}"
+              path: "{{base_path}}/teachers/{{item}}"
+              owner:
+                      name: "root"
+                      provider_type: 'file'
+              access_control: "{{ access_control }}"
+              #quota:
+              #        hard_limit_size: 100
+              #        cap_unit: 'GB'
+              #        quota_state: 'present'
+              recursive: True
+              state: "{{ state }}"
+      loop: "{{ teachers }}"
+
+

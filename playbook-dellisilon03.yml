@@ -1,0 +1,131 @@
+---
+- name: Create Unix home directory from storagedetails-isi.yml data in PowerScale/Isilon
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  collections:
+          - dellemc.isilon 
+
+  vars_files:
+          - vars/credsvault-isi.yml
+          - vars/storagedetails-isi.yml
+
+  tasks:
+
+    - name: Precheck Operations - Isilon / PowerScale
+      block:
+              - name: Gather facts on Isilon cluster
+                dellemc_isilon_gatherfacts:
+                        onefs_host: "{{ onefs_host }}"
+                        port_no: "{{ isilon_port }}"
+                        verify_ssl: "{{ verify_ssl }}"
+                        api_user: "{{ api_user }}"
+                        api_password: "{{ api_password }}"
+                        gather_subset:
+                                - attributes
+                register: results
+
+
+              - name: PRECHECK - Correct number of devices enrolled
+                fail:
+                        msg: "Precheck fail."
+                when: results.Attributes.Config.devices|length != 4
+
+
+              - name: PRECHECK - Ensure correct release version running on Cluster
+                fail:
+                        msg: "Precheck failure."
+                when: item.release != "v8.2.1.0"
+                loop: "{{ results.Attributes.Cluster_Version.nodes }}"
+                loop_control:
+                        label: "{{ item.release }}"
+
+
+              - name: PRECHECK - Ensure no current failures on the Isilon / Powerscale Cluster
+                fail:
+                        msg: "Precheck failure."
+                when: results.Attributes.Cluster_Version.errors | length != 0
+
+
+    - name: Change Operation
+      block:
+            - name: CHANGE - Create Filesystem with Quota for students
+              dellemc_isilon_filesystem:
+                      onefs_host: "{{ onefs_host }}"
+                      port_no: "{{ isilon_port }}"
+                      verify_ssl: "{{ verify_ssl }}"
+                      api_user: "{{ api_user }}"
+                      api_password: "{{ api_password }}"
+                      path: "{{base_path}}/students/{{item}}"
+                      owner:
+                              name: "root"
+                              provider_type: 'file'
+                      access_control: "{{ access_control }}"
+                      recursive: True
+                      state: "{{ state }}"
+              loop: "{{ students }}"
+            
+            
+            - name: CHANGE - Create Filesystem with Quota for Teachers
+              dellemc_isilon_filesystem:
+                      onefs_host: "{{ onefs_host }}"
+                      port_no: "{{ isilon_port }}"
+                      verify_ssl: "{{ verify_ssl }}"
+                      api_user: "{{ api_user }}"
+                      api_password: "{{ api_password }}"
+                      path: "{{base_path}}/teachers/{{item}}"
+                      owner:
+                              name: "root"
+                              provider_type: 'file'
+                      access_control: "{{ access_control }}"
+                      recursive: True
+                      state: "{{ state }}"
+              loop: "{{ teachers }}"
+
+            - name: CHANGE - End of Change operation
+              debug:
+                      msg: Change operation SUCCESSFUL.
+
+      rescue:
+              - name: RESCUE - Start Rollback
+                debug:
+                        msg: An error was encountered. Attempting rollback.
+
+              - name: RESCUE - Remove filesystem with Quota for students
+                dellemc_isilon_filesystem:
+                        onefs_host: "{{ onefs_host }}"
+                        port_no: "{{ isilon_port }}"
+                        verify_ssl: "{{ verify_ssl }}"
+                        api_user: "{{ api_user }}"
+                        api_password: "{{ api_password }}"
+                        path: "{{base_path}}/students/{{item}}"
+                        owner:
+                                name: "root"
+                                provider_type: 'file'
+                        access_control: "{{ access_control }}"
+                        recursive: True
+                        state: "absent"
+                loop: "{{ students }}"
+
+
+              - name: RESCUE - Remove filesystem with Quota for Teachers
+                dellemc_isilon_filesystem:
+                        onefs_host: "{{ onefs_host }}"
+                        port_no: "{{ isilon_port }}"
+                        verify_ssl: "{{ verify_ssl }}"
+                        api_user: "{{ api_user }}"
+                        api_password: "{{ api_password }}"
+                        path: "{{base_path}}/teachers/{{item}}"
+                        owner:
+                                name: "root"
+                                provider_type: 'file'
+                        access_control: "{{ access_control }}"
+                        recursive: True
+                        state: "absent"
+                loop: "{{ teachers }}"
+
+              - name: RESCUE - End of Rollback
+                debug:
+                        msg: Rollback SUCCESSFUL. No changes were made.
+

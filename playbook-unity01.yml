@@ -1,0 +1,25 @@
+---
+- name: Connect to Dell EMC Unity
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+          - vars/credsvault-unity.yml
+
+  collections:
+    - dellemc.unity
+
+  tasks:
+          - name: Get information of Unity array.
+            dellemc_unity_gatherfacts:
+              unispherehost: "{{unispherehost}}"
+              username: "{{username}}"
+              password: "{{password}}"
+              verifycert: "{{verifycert}}"
+            register: results
+            
+          - name: display facts
+            debug:
+              var: results
+

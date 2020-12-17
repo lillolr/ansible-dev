@@ -1,0 +1,22 @@
+# vars for isilon access
+---
+base_path: "/ifs/globaluni"
+access_control: "0755"
+access_zone: "System"
+domain: "alta3.com"
+state: "present"
+
+students:
+        - peterParker
+        - lukeCage
+        - natashaRomanoff
+        - wandaMaximoff
+        - scottLang
+
+teachers:
+        - tonyStark
+        - steveRogers
+        - thorOdinson
+        - bruceBanner
+        - carolDanvers
+

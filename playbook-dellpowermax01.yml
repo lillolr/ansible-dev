@@ -1,0 +1,42 @@
+---
+- name: PowerMax Dell Playbook v1
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  collections:
+    - dellemc.powermax
+
+  tasks:
+  - name: Try running our new gather_facts module
+    dellemc_powermax_gatherfacts:
+      unispherehost: 10.126.70.19
+      universion: "90" 
+      verifycert: False
+      user: smc
+      password: smc
+    register: results
+
+  - name: what JSON was returned
+    debug:
+      var: results
+
+  - name: Provide serial number for next gather facts
+    dellemc_powermax_gatherfacts:
+      unispherehost: 10.126.70.19
+      universion: "90"
+      verifycert: False
+      user: smc
+      password: smc
+      serial_no: "{{ results.Arrays[0] }}"
+      gather_subset:
+        - sg
+        - srp
+        - pg
+        - host
+    register: arrayresults
+
+  - name: dump out to the screen
+    debug:
+      var: arrayresults
+

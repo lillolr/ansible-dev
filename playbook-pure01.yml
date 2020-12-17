@@ -1,0 +1,20 @@
+---
+- name: Connect to Pure Storage Flash Array
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+          - vars/credsvault-pure.yml
+
+  collections:
+          - purestorage.flasharray
+
+  tasks:
+          - name: Try changing banner on Pure Storage Flash Array
+            purefa_banner:
+              banner: "Banner over\ntwo lines"
+              state: present
+              fa_url: "{{ fa_url }}"
+              api_token: "{{ api_token }}"
+

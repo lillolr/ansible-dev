@@ -1,0 +1,26 @@
+---
+- name: Playbook to gather facts on NetApp OnTap
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - /home/student/ans/vars/credsvault-netapp.yml
+
+  collections:
+  - netapp.ontap
+
+  tasks:
+          - name: Gather facts on NetApp OnTap platform
+            na_ontap_info:
+              state: info
+              hostname: "{{ hostname }}"
+              username: "{{ username }}"
+              password: "{{ password }}"
+            register: results
+
+
+          - name: display the gathered facts
+            debug:
+              msg: "{{ results.ontap_info }}"
+

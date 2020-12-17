@@ -1,0 +1,93 @@
+---
+- name: Gather configuration data
+  hosts: localhost
+  connection: local
+
+  collections:
+    - dellemc.powermax
+
+  vars_files:
+    - vars/credsvault.yml
+    - vars/storagedetails.yml
+
+  tasks:
+  - name: Get a list of arrays (serial_no.)
+    dellemc_powermax_gatherfacts:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+    register: arrays
+            
+  - name: Display the data that was just gathered
+    debug:
+            var: arrays
+            verbosity: 1
+
+  - name: Create a storage group
+    dellemc_powermax_storagegroup:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+        serial_no: "{{ arrays.Arrays[0] }}" # maps to an array (avail if you run the module without it)
+        service_level: "bronze"
+        state: "present"
+        sg_name: "{{ storage.sg_name }}"
+
+  - name: Create a volume for storage group
+    dellemc_powermax_storagegroup:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+        serial_no: "{{ arrays.Arrays[0] }}" # maps to an array (avail if you run the module without it)
+        service_level: "bronze"
+        state: "present"
+        sg_name: "{{ storage.sg_name }}"
+        volumes: "{{ storage.vols }}" # this is a list
+        vol_state: "present-in-group"
+
+  - name: "Create host {{ storage.host_name }}"
+    dellemc_powermax_host:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+        serial_no: "{{ arrays.Arrays[0] }}" # maps to an array (avail if you run the module without it)
+        host_name: "{{ storage.host_name }}"
+        initiators: "{{ storage.initiators }}"
+        state: present
+        initiator_state: "present-in-host"
+
+  - name: "Create port group {{ storage.portgroup_name }}"
+    dellemc_powermax_portgroup:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+        serial_no: "{{ arrays.Arrays[0] }}" # maps to an array (avail if you run the module without it)
+        portgroup_name: "{{ storage.portgroup_name }}"
+        state: present
+        ports: "{{ storage.port_list }}"
+        port_state: "present-in-group"
+
+  - name: "Create masking view {{ storage.mv_name }}"
+    dellemc_powermax_maskingview:
+        unispherehost: "{{ dell.unispherehost }}"
+        universion: "{{ dell.universion }}"
+        verifycert: "{{ dell.verifycert }}"
+        user: "{{ dell.user }}"
+        password: "{{ dell.password }}"
+        serial_no: "{{ arrays.Arrays[0] }}" # maps to an array (avail if you run the module without it)
+        mv_name: "{{ storage.mv_name }}"
+        portgroup_name: "{{ storage.portgroup_name }}"
+        host_name: "{{ storage.host_name }}"
+        sg_name: "{{ storage.sg_name }}"
+        state: present
+

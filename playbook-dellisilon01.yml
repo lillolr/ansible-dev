@@ -1,0 +1,34 @@
+---
+- name: Isilon gather facts
+  hosts: localhost
+  connection: local
+
+  # access the dellemc.isilon namespace
+  collections:
+          - dellemc.isilon 
+
+  vars_files:
+          - vars/credsvault-isi.yml
+
+  tasks:
+          - name: Gather facts on Isilon cluster
+            dellemc_isilon_gatherfacts:
+                    onefs_host: "{{ onefs_host }}"
+                    port_no: "{{ isilon_port }}"
+                    verify_ssl: "{{ verify_ssl }}"
+                    api_user: "{{ api_user }}"
+                    api_password: "{{ api_password }}"
+                    gather_subset:
+                            - attributes
+                            - access_zones
+                            - nodes
+                            - providers
+                            - users
+                            - groups
+            register: results
+
+          # display what was just collected
+          - name: Debug the results
+            debug:
+                    var: results
+

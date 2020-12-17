@@ -1,0 +1,45 @@
+---
+- name: Gather configuration data
+  hosts: localhost
+  connection: local
+
+  collections:
+    - dellemc.powermax
+
+  tasks:
+  - name: Get a list of arrays (serial_no.)
+    dellemc_powermax_gatherfacts:
+        unispherehost: 10.126.70.28
+        universion: "90"
+        verifycert: no
+        user: smc
+        password: smc
+    register: arrays
+            
+  - name: Display the data that was just gathered
+    debug:
+            var: arrays
+            verbosity: 1
+
+  - name: Pull all available facts
+    dellemc_powermax_gatherfacts:
+        unispherehost: 10.126.70.28
+        universion: "90"
+        verifycert: no
+        user: smc
+        password: smc
+        serial_no: "{{ item }}" # maps to an array (avail if you run the module without it)
+        gather_subset: [ vol, srp, sg, pg, host, hg, port, mv ]
+    loop: "{{ arrays.Arrays }}"
+    register: results
+
+  - name: Ensure a directory exists to store a fact report inside
+    file:
+            dest: reporting/
+            state: directory
+
+  - name: Create a local JSON file with current fact statistics
+    copy:
+            dest: "reporting/{{ ansible_date_time.date }}-powermax_facts.json"
+            content: "{{ results|to_json }}"
+

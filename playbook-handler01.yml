@@ -31,8 +31,15 @@
     get_url:
       url: https://raw.githubusercontent.com/rzfeeser/alta3files/master/apache2.conf
       dest: /etc/apache2/
+    notify:
+        - restart_apache
 
+  # This will ONLY run if the associated tasks run
+  # no matter how many times called these tasks
+  # will ONLY run once
+  handlers:
   - name: restart_apache
     service:
       name: apache2
       state: restarted
+
