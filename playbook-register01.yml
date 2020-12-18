@@ -1,0 +1,22 @@
+---
+ - name: Playbook with the register keyword
+   hosts: planetexpress
+
+   tasks:
+
+     - name: "Issue a trivial command"
+       command: ls /lib/
+       register: contentz_lib
+
+     - name: "debug - display data returned"
+       debug:
+         msg: "{{ contentz_lib }}"
+
+     - name: "debug - standard error"
+       debug:
+         msg: "{{ contentz_lib.stderr }}"
+
+     - name: "debug - standard out"
+       debug:
+         msg: "{{ contentz_lib.stdout }}"
+

@@ -1,0 +1,18 @@
+---
+- name: Playbook that sends HTTP GET to target URI
+  hosts: localhost
+
+  vars:
+    urltolookup: "http://api.open-notify.org/astros.json"
+
+  tasks:
+  - name: Lookup api with uri module
+    uri:
+      url: "{{ urltolookup }}"
+      method: GET
+    register: results    # save the JSON sent back by our script
+
+  - name: Print out the 'results'
+    debug:
+      var: results
+

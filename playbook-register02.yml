@@ -1,0 +1,21 @@
+---
+- name: More Register Examples
+  hosts: planetexpress
+  gather_facts: yes
+
+  tasks:
+    - name: Reachout with geturl to random generation
+      get_url:
+        url: https://www.random.org/integers/?num=1&min=0&max=1&col=1&base=10&format=plain&rnd=new
+
+        dest: ~/rand.txt
+        force: yes
+
+    - name: Read the rand.txt and save results in randvarz
+      command: cat ~/rand.txt
+      register: randvarz
+
+    - name: "debug - display the returned value"
+      debug:
+        msg: "The value returned to ansible was: {{ randvarz.stdout }}"
+

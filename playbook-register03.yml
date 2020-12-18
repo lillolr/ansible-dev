@@ -1,0 +1,26 @@
+---
+- name: Saving and recalling playbook values
+  hosts: planetexpress
+  gather_facts: true
+
+  tasks:
+    - name: Reachout with geturl to random generation
+      get_url:
+        url: https://www.random.org/integers/?num=1&min=0&max=1&col=1&base=10&format=plain&rnd=new
+        dest: ~/rand.txt
+        force: yes
+
+    - name: Read the rand.txt and save results in randvarz
+      command: cat ~/rand.txt
+      register: randvarz
+
+    - name: "debug - display a win"
+      debug:
+        msg: "congratulations! {{ ansible_hostname }} won :)"
+      when: randvarz.stdout == "1"
+
+    - name: "debug - display a failure"
+      debug:
+        msg: "Sorry. {{ ansible_hostname }} lost :("
+      when: randvarz.stdout == "0"
+

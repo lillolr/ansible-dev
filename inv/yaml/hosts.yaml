@@ -1,0 +1,29 @@
+---
+all:
+        hosts:
+                # if you had ungrouped hosts
+                # describe them here
+                # 10.10.2.2:
+                # 10.10.1.1:
+        children:
+                planetexpress:
+                        hosts:
+                                bender:
+                                        ansible_host: 10.10.2.3
+                                        ansible_user: bender
+                                fry:
+                                        ansible_host: 10.10.2.4
+                                        ansible_user: fry
+                                zoidberg:
+                                        ansible_host: 10.10.2.5
+                                        ansible_user: zoidberg
+                                farnsworth:
+                                        ansible_host: 10.10.2.6
+                                        ansible_user: farnsworth
+                                        dnsip: 9.9.9.9
+                                        ansible_python_interpreter: /usr/bin/python
+                        vars:
+                                dnsip: 8.8.8.8
+                                ansible_python_interpreter: /usr/bin/python3
+                                ansible_ssh_pass: alta3
+

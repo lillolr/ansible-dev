@@ -1,0 +1,55 @@
+- name: learning to recall var data                                               
+  hosts: localhost
+
+  # these are play vars
+  vars:
+    telecom:
+      - ericsson
+      - alu
+      - avaya
+      - cisco
+    heroes:
+      marvel:
+        - spiderman
+        - ironman
+        - daredevil
+      dc:
+        - wonderwoman
+        - batman
+        - superman
+
+  tasks:
+    # 1st item in the marvel list
+    - name: print out spiderman
+      debug:
+        msg: "{{ heroes.marvel[0] }}"
+
+    # second item in the dc list
+    - name: print out batman
+      debug:
+        msg: "{{ heroes.dc[1] }}"
+
+    - name: print out ALL dc heroes
+      debug:
+        msg: "{{ heroes.dc }}"
+
+
+    - name: print out all dc heroes with a loop
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ heroes.dc }}"
+
+    # fourth item in the telecom list
+    - name: print out cisco
+      debug:
+        msg: "{{ telecom[3] }}"
+
+    - name: Print out all dc and marvel heroes
+      debug:
+        msg: "{{ heroes }}"
+
+    - name: print out ALL dc AND marvel heroes ONLY
+      debug:
+        msg: "{{ item }} is the greatest! Go {{ item }}!!!!"
+      loop: "{{ heroes.marvel + heroes.dc }}"
+

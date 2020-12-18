@@ -1,0 +1,13 @@
+---
+- name: Extra vars vault
+  hosts: localhost
+
+  # reference the encrypted variable file
+  vars_files:
+    - vars/oscreds.yml
+
+  tasks:
+    - name: print out encrypted vars
+      debug:
+        msg: "{{ imscloud }}"
+

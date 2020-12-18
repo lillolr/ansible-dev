@@ -1,0 +1,14 @@
+---
+- name: Using a complex vars file
+  hosts: localhost
+  gather_facts: False
+
+  vars_files:
+    - vars/titanvars.yml
+
+  tasks:
+  - name: debug with_dict
+    debug:
+      var: "{{ item }}"
+    loop: "{{ prefix_list|dict2items }}"  # this will FAIL because prefixlist is a dictionary
+

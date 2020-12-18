@@ -1,0 +1,15 @@
+---
+- name: Intro to looping
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: First debug
+      debug:
+        msg: "The first message in the playbook."
+      no_log: true   # this setting will PREVENT the task from being logged
+
+    - name: Second debug
+      debug:
+        msg: "The second message in the playbook."
+

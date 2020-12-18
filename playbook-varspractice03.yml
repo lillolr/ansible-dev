@@ -1,0 +1,26 @@
+---
+- name: Practice with variable manipulation
+  hosts: localhost
+  gather_facts: False
+
+  vars_files:
+    - vars/titanvars.yml
+
+  tasks:
+
+    - name: debug with specific values
+      debug:
+        msg:
+          - "prefix-list key    >>> {{ item.key }}"
+          - "p value 0 name     >>> {{ item.value[0].name }}"
+          - "p value 1 name     >>> {{ item.value[1].name }}"
+          - "val 0 seq 0 num    >>> {{ item.value[0].seq[0].num }}"
+          - "val 0 seq 1 rule   >>> {{ item.value[0].seq[1].rule }}"
+          - "val 1 seq 0 action >>> {{ item.value[1].seq[0].action }}"
+      loop: "{{ prefix_list|dict2items }}"
+
+    - name: Loop across the list mapped to prefix_list.ipv4
+      debug:
+        var: item.name
+      loop: "{{ prefix_list.ipv4 }}"
+

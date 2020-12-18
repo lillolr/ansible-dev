@@ -1,0 +1,17 @@
+---
+prefix_list:
+  ipv4:
+     - name: "ICM-TITAN"
+       seq:
+         -  num: "10"
+            action: "act-10"
+            rule: "rule-10"
+         -  num: "20"
+            action: "act-20"
+            rule: "rule-20"
+     - name: "ICM-TITAN2"
+       seq:
+         -  num: "30"
+            action: "act-30"
+            rule: "rule-30"
+
